@@ -1,0 +1,34 @@
+{
+  "tasks": [
+    {
+      "taskName": "Task 1",
+      "emails": [
+        {
+          "email": "info.harsh.innet@gmail.com",
+          "reportUrl": "https://hcstovation.wordpress.com/wp-content/uploads/2025/06/harsh-raj.pdf",
+          "pin": "1234"
+        },
+        {
+          "email": "addy77799@gmail.com",
+          "reportUrl": "https://hcstovation.wordpress.com/wp-content/uploads/2025/06/aditya-raj.pdf",
+          "pin": "5678"
+        },
+        {
+          "email": "ajha74916@gmail.com",
+          "reportUrl": "https://hcstovation.wordpress.com/wp-content/uploads/2025/06/abhishek-jha.pdf",
+          "pin": "5678"
+        },
+        {
+          "email": "asthakumari042006@gmail.com",
+          "reportUrl": "https://hcstovation.wordpress.com/wp-content/uploads/2025/06/astha-kumari.pdf",
+          "pin": "5678"
+        },
+        {
+          "email": "radi83440@gmail.com",
+          "reportUrl": "https://hcstovation.wordpress.com/wp-content/uploads/2025/06/aditya-kumar.pdf",
+          "pin": "5678"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buildx Task Report Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom transition for buttons and inputs */
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .modal-content {
+            transition: transform 0.4s ease, opacity 0.4s ease;
+        }
+
+        .modal-enter-active {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-leave-active {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+   <!-- Navbar -->
+<nav class="bg-gradient-to-r from-blue-600 to-teal-500 shadow-md fixed w-full top-0 left-0 z-10">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-center items-center">
+        <!-- Logo -->
+        <img src="logo.png" alt="Logo" class="h-12 w-auto mr-4">
+        <!-- Title with smaller text size -->
+        <h1 class="text-xl font-semibold text-white">Buildx Task Report Downloader</h1>
+    </div>
+</nav>
+
+
+    <!-- Main Content -->
+    <div class="mt-28 max-w-7xl mx-auto px-6 py-6">
+        <!-- Task Buttons -->
+        <div id="taskButtons" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Task buttons will be populated here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Task Modal -->
+    <div id="taskModal" class="modal fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50" style="display:none;">
+        <div class="modal-content bg-white p-8 rounded-lg shadow-xl w-full max-w-lg">
+            <h2 id="taskName" class="text-2xl font-semibold text-gray-800 mb-6">Task Report</h2>
+
+            <!-- Select Email -->
+            <label for="email" class="block text-sm font-medium text-gray-700">Select Email</label>
+            <select id="email" class="mt-2 block w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <!-- Emails will be populated here -->
+            </select>
+
+            <!-- Enter PIN -->
+            <label for="pin" class="block text-sm font-medium text-gray-700 mt-4">Enter PIN</label>
+            <input type="text" id="pin" class="mt-2 block w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" placeholder="Enter PIN">
+
+            <!-- Download Button -->
+            <button id="downloadReportButton" class="mt-6 w-full py-4 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                Download Report
+            </button>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="text-red-500 text-sm mt-2"></div>
+
+            <!-- Close Button -->
+            <button id="closeModal" class="mt-4 w-full py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let tasks = [];
+
+        // Fetch task data from tasks.json
+        fetch('tasks.json')
+            .then(response => response.json())
+            .then(data => {
+                tasks = data.tasks;
+                createTaskButtons();
+            })
+            .catch(error => console.error('Error fetching task data:', error));
+
+        // Create task buttons dynamically
+        function createTaskButtons() {
+            const taskButtonsContainer = document.getElementById('taskButtons');
+            tasks.forEach(task => {
+                const button = document.createElement('button');
+                button.textContent = task.taskName;
+                button.classList.add('task-button', 'btn', 'bg-blue-600', 'text-white', 'py-5', 'px-8', 'rounded-lg', 'shadow-md', 'hover:bg-blue-700', 'focus:outline-none', 'transition-transform', 'duration-300', 'transform', 'hover:scale-105');
+                button.addEventListener('click', () => openTaskModal(task));
+                taskButtonsContainer.appendChild(button);
+            });
+        }
+
+        // Open the modal when a task is clicked
+        function openTaskModal(task) {
+            selectedTask = task;
+            document.getElementById('taskName').textContent = `${task.taskName} Report`;
+
+            // Populate email options
+            const emailSelect = document.getElementById('email');
+            emailSelect.innerHTML = ''; // Clear previous options
+            task.emails.forEach(email => {
+                const option = document.createElement('option');
+                option.value = email.email;
+                option.textContent = email.email;
+                emailSelect.appendChild(option);
+            });
+
+            document.getElementById('taskModal').style.display = 'flex'; // Show modal
+            document.getElementById('errorMessage').textContent = ''; // Clear error message
+        }
+
+        // Close the modal
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('taskModal').style.display = 'none';
+        });
+
+        // Handle report download
+        document.getElementById('downloadReportButton').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const pin = document.getElementById('pin').value;
+
+            const emailData = selectedTask.emails.find(e => e.email === email);
+            if (emailData && emailData.pin === pin) {
+                // Create a temporary anchor element for downloading
+                const downloadLink = document.createElement('a');
+                downloadLink.href = emailData.reportUrl;  // Set the report URL
+                downloadLink.download = emailData.reportUrl.split('/').pop();  // Use the file name from the URL (optional)
+                
+                // Trigger the download by simulating a click
+                downloadLink.click();
+                
+                // Close the modal
+                document.getElementById('taskModal').style.display = 'none'; 
+            } else {
+                document.getElementById('errorMessage').textContent = 'Incorrect PIN. Please try again.';
+            }
+        });
+    </script>
+
+</body>
+</html>
